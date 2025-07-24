@@ -1,0 +1,118 @@
+﻿@using Dynamic_Form_Builder_Johan.ViewModel
+@model FromVM
+
+@{
+    ViewData["Title"] = "Dynamic Form Builder";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg p-4 rounded-4">
+        <h3 class="mb-4 text-center">Dynamic Form Builder</h3>
+
+        <form asp-action="SaveForm" method="post">
+            <div class="row g-3">
+
+                <!-- Form Title -->
+                <div class="col-12">
+                    <label asp-for="Title" class="form-label">Form Title <span class="text-danger">*</span></label>
+                    <input asp-for="Title" class="form-control border border-dark border-1" placeholder="Form Title" required />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <!-- Field Container -->
+                <div id="fieldContainer" class="col-12">
+                    @for (int i = 0; i < (Model.Fields?.Count > 0 ? Model.Fields.Count : 1); i++)
+                    {
+                        <div class="border border-dark border-1 rounded p-3 mb-3 field-group">
+                            <div class="row g-3 align-items-end">
+
+                                <div class="col-md-5">
+                                    <label class="form-label">Label</label>
+                                    <input name="Fields[@i].Label" class="form-control border border-dark border-1" placeholder="Label" />
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label">Option</label>
+                                    <select name="Fields[@i].Option" class="form-select border border-dark border-1">
+                                        <option selected disabled>Choose...</option>
+                                        <option value="option1">Option 1</option>
+                                        <option value="option2">Option 2</option>
+                                        <option value="option3">Option 3</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <div class="form-check mt-4">
+                                        <input type="checkbox" name="Fields[@i].IsRequired" class="form-check-input" />
+                                        <label class="form-check-label">Is Required</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-1 text-end">
+                                    <button type="button" class="btn btn-danger btn-sm remove-btn mt-4">×</button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Buttons -->
+                <div class="col-12 d-flex gap-2 justify-content-end mt-3">
+                    <button type="button" id="addMoreBtn" class="btn btn-success">Add More</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="reset" class="btn btn-secondary">Clear</button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        let fieldIndex = @Model.Fields?.Count ?? 1;
+
+        $('#addMoreBtn').click(function () {
+            const newFieldGroup = `
+                <div class="border border-dark border-1 rounded p-3 mb-3 field-group">
+                    <div class="row g-3 align-items-end">
+
+                        <div class="col-md-5">
+                            <label class="form-label">Label</label>
+                            <input name="Fields[${fieldIndex}].Label" class="form-control border border-dark border-1" placeholder="Label" />
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Option</label>
+                            <select name="Fields[${fieldIndex}].Option" class="form-select border border-dark border-1">
+                                <option selected disabled>Choose...</option>
+                                <option value="option1">Option 1</option>
+                                <option value="option2">Option 2</option>
+                                <option value="option3">Option 3</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-check mt-4">
+                                <input type="checkbox" name="Fields[${fieldIndex}].IsRequired" class="form-check-input" />
+                                <label class="form-check-label">Is Required</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-1 text-end">
+                            <button type="button" class="btn btn-danger btn-sm remove-btn mt-4">×</button>
+                        </div>
+                    </div>
+                </div>`;
+            $('#fieldContainer').append(newFieldGroup);
+            fieldIndex++;
+        });
+
+        // Remove a field group when "Remove" button is clicked
+        $(document).on('click', '.remove-btn', function () {
+            $(this).closest('.field-group').remove();
+        });
+    </script>
+}
